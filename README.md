@@ -14,7 +14,7 @@ redisClusterContext *cc = redisClusterContextInit();
 
 redisClusterSetOptionPassword(cc, "your password");
 
-redisClusterSetOptionAddNodes(cc, "127.0.0.1:6379,127.0.0.1:6380,127.0.0.1:6381");
+redisClusterSetOptionAddNodes(cc, "your cluster info");
 
 redisClusterConnect2(cc);
 
