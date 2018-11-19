@@ -11,8 +11,11 @@ int redisClusterSetOptionPassword(redisClusterContext *cc, const char *password)
 
 ### HOW TO USE:
 redisClusterContext *cc = redisClusterContextInit();
+
 redisClusterSetOptionPassword(cc, "your password");
+
 redisClusterSetOptionAddNodes(cc, "127.0.0.1:6379,127.0.0.1:6380,127.0.0.1:6381");
+
 redisClusterConnect2(cc);
 
 ## MORE INFORMATION:
