@@ -2156,7 +2156,7 @@ static redisClusterContext *_redisClusterConnect(redisClusterContext *cc, const 
     return cc;
 }
 
-redisClusterContext *redisClusterConnect(const char *addrs, int flags)
+redisClusterContext *redisClusterConnect(const char *addrs, const char *password, int flags)
 {
     redisClusterContext *cc;
 
@@ -2166,6 +2166,8 @@ redisClusterContext *redisClusterConnect(const char *addrs, int flags)
     {
         return NULL;
     }
+
+	redisClusterSetOptionPassword(cc, password);
 
     cc->flags |= REDIS_BLOCK;
     if(flags)
@@ -2177,7 +2179,7 @@ redisClusterContext *redisClusterConnect(const char *addrs, int flags)
 }
 
 redisClusterContext *redisClusterConnectWithTimeout(
-    const char *addrs, const struct timeval tv, int flags)
+    const char *addrs,  const char *password, const struct timeval tv, int flags)
 {
     redisClusterContext *cc;
 
@@ -2187,6 +2189,8 @@ redisClusterContext *redisClusterConnectWithTimeout(
     {
         return NULL;
     }
+
+	redisClusterSetOptionPassword(cc, password);
 
     cc->flags |= REDIS_BLOCK;
     if(flags)
@@ -2204,7 +2208,7 @@ redisClusterContext *redisClusterConnectWithTimeout(
     return _redisClusterConnect(cc, addrs);
 }
 
-redisClusterContext *redisClusterConnectNonBlock(const char *addrs, int flags) {
+redisClusterContext *redisClusterConnectNonBlock(const char *addrs, const char *password, int flags) {
 
     redisClusterContext *cc;
 
@@ -2214,6 +2218,9 @@ redisClusterContext *redisClusterConnectNonBlock(const char *addrs, int flags) {
     {
         return NULL;
     }
+
+	redisClusterSetOptionPassword(cc, password);
+	
 
     cc->flags &= ~REDIS_BLOCK;
     if(flags)
@@ -4483,12 +4490,12 @@ static redisAsyncContext *actx_get_after_update_route_by_slot(
     return ac;
 }
 
-redisClusterAsyncContext *redisClusterAsyncConnect(const char *addrs, int flags) {
+redisClusterAsyncContext *redisClusterAsyncConnect(const char *addrs, const char* password, int flags) {
 
     redisClusterContext *cc;
     redisClusterAsyncContext *acc;
 
-    cc = redisClusterConnectNonBlock(addrs, flags);
+    cc = redisClusterConnectNonBlock(addrs, password, flags);
     if(cc == NULL)
     {
         return NULL;
