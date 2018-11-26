@@ -30,12 +30,13 @@
 
 #ifndef __HIREDIS_LIBEVENT_H__
 #define __HIREDIS_LIBEVENT_H__
+#include <stdlib.h>
 #include <event.h>
 #include "../hiredis.h"
 #include "../async.h"
 
 #if 1 //shenzheng 2015-9-21 redis cluster
-#include "../hircluster.h"
+#include "../rediscluster.h"
 #endif //shenzheng 2015-9-21 redis cluster
 
 typedef struct redisLibeventEvents {

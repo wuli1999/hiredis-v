@@ -36,7 +36,7 @@
 #include "../async.h"
 
 #if 1 //shenzheng 2015-11-5 redis cluster
-#include "../hircluster.h"
+#include "../hiredis-v.h"
 #endif //shenzheng 2015-11-5 redis cluster
 
 typedef struct redisAeEvents {
