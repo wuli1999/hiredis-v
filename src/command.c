@@ -1,6 +1,6 @@
 #include <ctype.h>
 #include <errno.h>
-
+#include <stdlib.h>
 #include "command.h"
 #include "hiutil.h"
 #include "hiarray.h"
@@ -108,6 +108,8 @@ redis_arg1(struct cmd *r)
     case CMD_REQ_REDIS_ZRANK:
     case CMD_REQ_REDIS_ZREVRANK:
     case CMD_REQ_REDIS_ZSCORE:
+
+	case CMD_REQ_REDIS_PUBLISH:
         return 1;
 
     default:
@@ -151,6 +153,7 @@ redis_arg2(struct cmd *r)
     case CMD_REQ_REDIS_ZREMRANGEBYSCORE:
 
     case CMD_REQ_REDIS_RESTORE:
+
         return 1;
 
     default:
@@ -240,6 +243,8 @@ redis_argx(struct cmd *r)
     switch (r->type) {
     case CMD_REQ_REDIS_MGET:
     case CMD_REQ_REDIS_DEL:
+	case CMD_REQ_REDIS_SUBSCRIBE:
+	case CMD_REQ_REDIS_PSUBSCRIBE:
         return 1;
 
     default:
@@ -871,6 +876,11 @@ redis_parse_cmd(struct cmd *r)
                     break;
                 }
 
+				if (str7icmp(m, 'p', 'u', 'b', 'l', 'i', 's', 'h')) {
+					r->type = CMD_REQ_REDIS_PUBLISH;
+					break;
+				}
+
                 break;
 
             case 8:
@@ -903,7 +913,6 @@ redis_parse_cmd(struct cmd *r)
                     r->type = CMD_REQ_REDIS_ZREVRANK;
                     break;
                 }
-
                 break;
 
             case 9:
@@ -932,13 +941,23 @@ redis_parse_cmd(struct cmd *r)
                     break;
                 }
 
+				if (str9icmp(m, 's', 'u', 'b', 's', 'c', 'r', 'i', 'b', 'e')) {
+					r->type = CMD_REQ_REDIS_SUBSCRIBE;
+					break;
+				}
+
                 break;
 
             case 10:
                 if (str10icmp(m, 's', 'd', 'i', 'f', 'f', 's', 't', 'o', 'r', 'e')) {
                     r->type = CMD_REQ_REDIS_SDIFFSTORE;
                     break;
-                }
+				}
+				if (str10icmp(m, 'p', 's', 'u', 'b', 's', 'c', 'r', 'i', 'b', 'e')) {
+					r->type = CMD_REQ_REDIS_PSUBSCRIBE;
+					break;
+				}
+				break;
 
             case 11:
                 if (str11icmp(m, 'i', 'n', 'c', 'r', 'b', 'y', 'f', 'l', 'o', 'a', 't')) {

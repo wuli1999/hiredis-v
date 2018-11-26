@@ -1,0 +1,10 @@
+prefix=/usr/local
+exec_prefix=${prefix}
+libdir=/usr/local/lib
+includedir=/usr/local/include/rediscluster
+
+Name: rediscluster
+Description: Minimalistic C client library for Redis and Redis Cluster.
+Version: ..
+Libs: -L${libdir} -lhiredis_v
+Cflags: -I${includedir} -D_FILE_OFFSET_BITS=64

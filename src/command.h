@@ -120,6 +120,11 @@ typedef enum cmd_parse_result {
     ACTION( REQ_REDIS_PING )                   /* redis requests - ping/quit */                         \
     ACTION( REQ_REDIS_QUIT)                                                                         \
     ACTION( REQ_REDIS_AUTH)                                                                         \
+	/* add by wuli */                                                                                  \
+    ACTION( REQ_REDIS_PUBLISH)                                                                       \
+    ACTION( REQ_REDIS_SUBSCRIBE)                                                                     \
+	ACTION( REQ_REDIS_PSUBSCRIBE)                                                                   \
+/* end add*/                                                                                         \
     ACTION( RSP_REDIS_STATUS )                 /* redis response */                                   \
     ACTION( RSP_REDIS_ERROR )                                                                       \
     ACTION( RSP_REDIS_INTEGER )                                                                     \

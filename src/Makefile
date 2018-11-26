@@ -3,19 +3,19 @@
 # Copyright (C) 2010-2011 Pieter Noordhuis <pcnoordhuis at gmail dot com>
 # This file is released under the BSD license, see the COPYING file
 
-OBJ=net.o hiredis.o sds.o async.o read.o hiarray.o hiutil.o command.o crc16.o adlist.o hiredis-v.o
+OBJ=net.o hiredis.o sds.o async.o read.o hiarray.o hiutil.o command.o crc16.o adlist.o rediscluster.o
 EXAMPLES=hiredis-example hiredis-example-libevent hiredis-example-libev hiredis-example-glib
 TESTS=hiredis-test
-LIBNAME=libhiredis_v
-PKGCONFNAME=hiredis_v.pc
+LIBNAME=librediscluster
+PKGCONFNAME=rediscluster.pc
 
-HIREDIS_V_MAJOR=$(shell grep HIREDIS_V_MAJOR hiredis-v.h | awk '{print $$3}')
-HIREDIS_V_MINOR=$(shell grep HIREDIS_V_MINOR hiredis-v.h | awk '{print $$3}')
-HIREDIS_V_PATCH=$(shell grep HIREDIS_V_PATCH hiredis-v.h | awk '{print $$3}')
+REDISCLUSTER_MAJOR=$(shell grep REDISCLUSTER_MAJOR rediscluster.h | awk '{print $$3}')
+REDISCLUSTER_MINOR=$(shell grep REDISCLUSTER_MINOR rediscluster.h | awk '{print $$3}')
+REDISCLUSTER_PATCH=$(shell grep REDISCLUSTER_PATCH rediscluster.h | awk '{print $$3}')
 
 # Installation related variables and target
 PREFIX?=/usr/local
-INCLUDE_PATH?=include/hiredis-v
+INCLUDE_PATH?=include/rediscluster
 LIBRARY_PATH?=lib
 PKGCONF_PATH?=pkgconfig
 INSTALL_INCLUDE_PATH= $(DESTDIR)$(PREFIX)/$(INCLUDE_PATH)
@@ -37,15 +37,15 @@ export REDIS_TEST_CONFIG
 # Fallback to gcc when $CC is not in $PATH.
 CC:=$(shell sh -c 'type $(CC) >/dev/null 2>/dev/null && echo $(CC) || echo gcc')
 OPTIMIZATION?=-O3
-WARNINGS=-Wall -W -Wstrict-prototypes -Wwrite-strings
+WARNINGS=-Wall -W -Wstrict-prototypes -Wwrite-strings -Wno-unused-function
 DEBUG?= -g -ggdb
 REAL_CFLAGS=$(OPTIMIZATION) -fPIC $(CFLAGS) $(WARNINGS) $(DEBUG) $(ARCH)
 REAL_LDFLAGS=$(LDFLAGS) $(ARCH)
 
 DYLIBSUFFIX=so
 STLIBSUFFIX=a
-DYLIB_MINOR_NAME=$(LIBNAME).$(DYLIBSUFFIX).$(HIREDIS_V_MAJOR).$(HIREDIS_V_MINOR)
-DYLIB_MAJOR_NAME=$(LIBNAME).$(DYLIBSUFFIX).$(HIREDIS_V_MAJOR)
+DYLIB_MINOR_NAME=$(LIBNAME).$(DYLIBSUFFIX).$(REDISCLUSTER_MAJOR).$(REDISCLUSTER_MINOR)
+DYLIB_MAJOR_NAME=$(LIBNAME).$(DYLIBSUFFIX).$(REDISCLUSTER_MAJOR)
 DYLIBNAME=$(LIBNAME).$(DYLIBSUFFIX)
 DYLIB_MAKE_CMD=$(CC) -shared -Wl,-soname,$(DYLIB_MINOR_NAME) -o $(DYLIBNAME) $(LDFLAGS)
 STLIBNAME=$(LIBNAME).$(STLIBSUFFIX)
@@ -60,8 +60,8 @@ ifeq ($(uname_S),SunOS)
 endif
 ifeq ($(uname_S),Darwin)
   DYLIBSUFFIX=dylib
-  DYLIB_MINOR_NAME=$(LIBNAME).$(HIREDIS_V_MAJOR).$(HIREDIS_V_MINOR).$(DYLIBSUFFIX)
-  DYLIB_MAJOR_NAME=$(LIBNAME).$(HIREDIS_V_MAJOR).$(DYLIBSUFFIX)
+  DYLIB_MINOR_NAME=$(LIBNAME).$(REDISCLUSTER_MAJOR).$(REDISCLUSTER_MINOR).$(DYLIBSUFFIX)
+  DYLIB_MAJOR_NAME=$(LIBNAME).$(REDISCLUSTER_MAJOR).$(DYLIBSUFFIX)
   DYLIB_MAKE_CMD=$(CC) -shared -Wl,-install_name,$(DYLIB_MINOR_NAME) -o $(DYLIBNAME) $(LDFLAGS)
 endif
 
@@ -75,7 +75,7 @@ command.o: command.c command.h hiredis.h read.h sds.h adlist.h hiutil.h hiarray.
 crc16.o: crc16.c hiutil.h
 dict.o: dict.c fmacros.h dict.h
 hiarray.o: hiarray.c hiarray.h hiutil.h
-hiredis-v.o: hiredis-v.c fmacros.h hiredis-v.h hiredis.h read.h sds.h adlist.h hiarray.h hiutil.h async.h command.h dict.c dict.h
+rediscluster.o: rediscluster.c fmacros.h rediscluster.h hiredis.h read.h sds.h adlist.h hiarray.h hiutil.h async.h command.h dict.c dict.h
 hiredis.o: hiredis.c fmacros.h hiredis.h read.h sds.h net.h
 hiutil.o: hiutil.c hiutil.h
 net.o: net.c fmacros.h net.h hiredis.h read.h sds.h
@@ -161,15 +161,15 @@ $(PKGCONFNAME): hiredis.h
 	@echo libdir=$(PREFIX)/$(LIBRARY_PATH) >> $@
 	@echo includedir=$(PREFIX)/$(INCLUDE_PATH) >> $@
 	@echo >> $@
-	@echo Name: hiredis-v >> $@
+	@echo Name: rediscluster >> $@
 	@echo Description: Minimalistic C client library for Redis and Redis Cluster. >> $@
-	@echo Version: $(HIREDIS_V_MAJOR).$(HIREDIS_V_MINOR).$(HIREDIS_V_PATCH) >> $@
+	@echo Version: $(REDISCLUSTER_MAJOR).$(REDISCLUSTER_MINOR).$(REDISCLUSTER_PATCH) >> $@
 	@echo Libs: -L\$${libdir} -lhiredis_v >> $@
 	@echo Cflags: -I\$${includedir} -D_FILE_OFFSET_BITS=64 >> $@
 
 install: $(DYLIBNAME) $(STLIBNAME) $(PKGCONFNAME)
 	mkdir -p $(INSTALL_INCLUDE_PATH) $(INSTALL_LIBRARY_PATH)
-	$(INSTALL) hiredis.h async.h read.h sds.h hiutil.h hiarray.h dict.h dict.c adlist.h fmacros.h hiredis-v.h adapters $(INSTALL_INCLUDE_PATH)
+	$(INSTALL) hiredis.h async.h read.h sds.h hiutil.h hiarray.h dict.h dict.c adlist.h fmacros.h rediscluster.h adapters $(INSTALL_INCLUDE_PATH)
 	$(INSTALL) $(DYLIBNAME) $(INSTALL_LIBRARY_PATH)/$(DYLIB_MINOR_NAME)
 	cd $(INSTALL_LIBRARY_PATH) && ln -sf $(DYLIB_MINOR_NAME) $(DYLIB_MAJOR_NAME)
 	cd $(INSTALL_LIBRARY_PATH) && ln -sf $(DYLIB_MAJOR_NAME) $(DYLIBNAME)
