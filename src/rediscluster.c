@@ -1458,9 +1458,11 @@ cluster_update_route_by_addr(redisClusterContext *cc,
 		}
 
 		listReleaseIterator(lit);
+		lit = NULL;
 	}
 
 	dictReleaseIterator(dit);
+	dit = NULL;
 
 	hiarray_sort(slots, cluster_slot_start_cmp);
 	for (j = 0; j < hiarray_n(slots); j++) {
